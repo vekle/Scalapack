@@ -245,23 +245,41 @@ Matrix *diag_matrix_exp(complex<double> coef, Matrix &A)
     return B;
 };
 
-// Очень редко происходит гонка процессов
 void print_diag(Matrix &A)
 {
     Cblacs_barrier(ictxt, "All");
 
-    for (int r = 0; r < proc_num; r++)
-    {
-        if (r == proc_rank && row_rank == col_rank) {
-            for (int i = 0; i < A.nq; i++) {
-                cout << A.data_proc[i * A.nq + i] << " ";
-            }
-            fflush(stdout);
+    if (proc_rank != 0 && row_rank == col_rank) {
+        complex<double> *diag = (complex<double> *)calloc(A.nq, sizeof(complex<double>));
+        for (int i = 0; i < A.nq; i++) {
+            diag[i] = A.data_proc[i * A.nq + i];
         }
-        Cblacs_barrier(ictxt, "All");
+
+        MPI_Send(diag, A.nq, MPI_DOUBLE_COMPLEX, 0, 0, MPI_COMM_WORLD);
+        free(diag);
     }
 
     if (proc_rank == 0) {
+        int recv_count = A.nq;
+        complex<double> *diag = (complex<double> *)calloc(A.nq, sizeof(complex<double>));
+        for (int i = 0; i < A.nq; i++) {
+            diag[i] = A.data_proc[i * A.nq + i];
+        }
+        for (int j = 0; j < recv_count; j++)
+                cout << diag[j] << " ";
+
+        for (int i = col_num + 1; i < proc_num; i += col_num + 1) {
+
+            if (i == proc_num - 1)
+                recv_count = (A.n - 1) % A.nq + 1;
+
+            MPI_Recv(diag, recv_count, MPI_DOUBLE_COMPLEX, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            for (int j = 0; j < recv_count; j++)
+                cout << diag[j] << " ";
+        }
+
+        free(diag);
         cout << endl;
         fflush(stdout);
     }
