@@ -89,13 +89,13 @@ int main(int argc, char **argv)
     int matrix_size = 0;
     if (atom_num > photon_num) {
 
-        int combination;
+        double combination;
         for (int i = -1; i < photon_num; i++) {
 
             if (i == -1) {
                 combination = 1;
             } else {
-                combination *= (atom_num - i) / (i + 1);
+                combination = combination * (atom_num - i) / (i + 1);
             }
 
             matrix_size += combination;
@@ -120,14 +120,14 @@ int main(int argc, char **argv)
 
         int cur_diag_elem = 0;
 
-        for (int i = 0; photon_num - i >= 0 && i <= atom_num; i++) {
+        for (int i = 0; i <= photon_num && i <= atom_num; i++) {
 
             int cur_photon_num = photon_num - i;
             int cur_atom_num = i;
 
             cur_diag_elem += cur_basis_size;
             cur_basis_size = next_basis_size;
-            next_basis_size = next_basis_size / (cur_atom_num + 1) * (atom_num - cur_atom_num);
+            next_basis_size = (double)next_basis_size * (atom_num - cur_atom_num) / (cur_atom_num + 1);
             if (cur_photon_num == 0 || cur_atom_num == atom_num)
                     next_basis_size = 0;
 
