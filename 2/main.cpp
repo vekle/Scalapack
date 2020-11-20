@@ -86,15 +86,26 @@ int main(int argc, char **argv)
 
     // Построение Гамильтониана
 
-    int matrix_size;
+    int matrix_size = 0;
     if (atom_num > photon_num) {
-        matrix_size = (1u << atom_num) - (1u << (atom_num - photon_num - 1)); 
+
+        int combination;
+        for (int i = -1; i < photon_num; i++) {
+
+            if (i == -1) {
+                combination = 1;
+            } else {
+                combination *= (atom_num - i) / (i + 1);
+            }
+
+            matrix_size += combination;
+        }
     } else {
         matrix_size = (1u << atom_num);
     }
 
     if (proc_rank == 0)
-        cout << matrix_size << endl;
+        cout << "Размер Гамильтониана: " << matrix_size << endl;
 
     Matrix *H = new Matrix(matrix_size, false);
 
@@ -147,9 +158,6 @@ int main(int argc, char **argv)
                 }
             }
         }
-
-        if (cur_basis)
-            free(cur_basis);
     }
 
     // Вывод матрицы H
