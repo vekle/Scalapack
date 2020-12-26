@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
 
     double h = 1, wa = 2000, wc = 1000, g = 10;
-    double t_max = t_delta * 100;
+    double t_max = t_delta * 20;
 
     // Построение Гамильтониана
 
