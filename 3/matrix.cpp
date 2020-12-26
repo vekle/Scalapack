@@ -372,7 +372,7 @@ complex<double> print_diag(Matrix &A, int photon_num_max, int photon_num_min, in
             sink_sum[cur_sink] += diag[j];
             p_count++;
 
-            cout << diag[j].real() << "  ";
+            cout << abs(diag[j].real()) << "  ";
         }
 
         for (int i = col_num + 1; i < proc_num; i += col_num + 1) {
@@ -406,7 +406,7 @@ complex<double> print_diag(Matrix &A, int photon_num_max, int photon_num_min, in
                 sink_sum[cur_sink] += diag[j];
                 p_count++;
 
-                cout << diag[j].real() << " ";
+                cout << abs(diag[j].real()) << " ";
             }
         }
 
