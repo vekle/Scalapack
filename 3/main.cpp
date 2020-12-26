@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
 
     double h = 1, wa = 2000, wc = 1000, g = 10;
-    double t_max = t_delta * 50;
+    double t_max = t_delta * 100;
 
     // Построение Гамильтониана
 
@@ -265,7 +265,7 @@ int main(int argc, char **argv)
                 local_idx = L_in->get_local_idx(global_idx);
 
                 if (local_idx != -1)
-                    L_in->data_proc[local_idx] = 0;  
+                    L_in->data_proc[local_idx] = coef2;  
             }
 
             cur_diag_elem += cur_basis_size;
@@ -279,10 +279,10 @@ int main(int argc, char **argv)
 
     Matrix *P = new Matrix(matrix_size, false);
     if (proc_rank == 0) { 
-        P->data[0] = 0.5;
-        P->data[1] = 0.25;
-        P->data[matrix_size] = 0.25;
         P->data[matrix_size + 1] = 0.5;
+        P->data[matrix_size + 2] = -0.5;
+        P->data[2 * matrix_size + 1] = -0.5;
+        P->data[2 * matrix_size + 2] = 0.5;
     }
     P->scatter();
 
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
         subtract_A_B(*tmp6, *tmp5, l_out);
         delete(tmp6);
 
-        sum_A_B(*tmp2, *tmp5, im_one * complex<double>(t_delta / h));
+        sum_A_B(*tmp2, *tmp5, complex<double>(t_delta / h));
         delete(tmp2);
 
         sum_A_B(*tmp5, *P, 1.0); 
